@@ -14,14 +14,14 @@ public static class WebApplicationBuilderExtensions
             options.SwaggerDoc("v1",
                 new OpenApiInfo
                 {
-                    Title = "ACME.LearningCenterPlatform.API",
+                    Title = "ACME.eb7429u20231c426.API",
                     Version = "v1",
-                    Description = "ACME Learning Center Platform API",
+                    Description = "ACME eb7429u20231c426.API",
                     TermsOfService = new Uri("https://acme-learning.com/tos"),
                     Contact = new OpenApiContact
                     {
-                        Name = "ACME Studios",
-                        Email = "contact@acme.com"
+                        Name = "Examen Final",
+                        Email = "u20231c426@upc.edu.pe"
                     },
                     License = new OpenApiLicense
                     {
