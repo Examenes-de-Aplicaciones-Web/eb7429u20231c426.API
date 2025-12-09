@@ -11,7 +11,7 @@ public static class WebApplicationBuilderExtensions
 {
     public static void AddLockerContextService(this WebApplicationBuilder builder)
     {
-        // Profiles Bounded Context Dependency Injection Configuration
+        // Locker Bounded Context Dependency Injection Configuration
         builder.Services.AddScoped<ILockerRepository, LockerRepository>();
         builder.Services.AddScoped<ILockerCommandService, LockerCommandService>();
         builder.Services.AddScoped<ILockersQueryService, LockerQueryService>();
