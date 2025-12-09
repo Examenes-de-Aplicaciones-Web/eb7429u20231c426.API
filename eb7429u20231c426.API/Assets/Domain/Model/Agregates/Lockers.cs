@@ -9,14 +9,14 @@ public partial class Lockers
 
     public string LockerCode { get; set; }
 
-    public bool isAvailable { get; set; }
+    public bool IsAvailable { get; set; }
 
     public EStore StoreId { get; set; }
 
     protected Lockers()
     {
         LockerCode = string.Empty;
-        isAvailable = true;
+        IsAvailable = true;
         StoreId = default;
         
     }
@@ -25,6 +25,7 @@ public partial class Lockers
     {
         LockerCode = lockerCode;
         StoreId = storeId;
+        IsAvailable = true;
     }
     
     public Lockers(CreateLockerCommand command)

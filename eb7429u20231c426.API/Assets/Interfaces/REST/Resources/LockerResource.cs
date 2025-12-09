@@ -3,6 +3,6 @@
 public record LockerResource(
     int Id,
     string LockerCode,
-    bool isAvailable,
+    bool IsAvailable,
     int StoreId
     );

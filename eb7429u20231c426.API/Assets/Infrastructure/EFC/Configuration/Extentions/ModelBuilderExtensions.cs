@@ -9,7 +9,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Lockers>().HasKey(x => x.Id);
         builder.Entity<Lockers>().Property(x => x.LockerCode).IsRequired();
-        builder.Entity<Lockers>().Property(x => x.isAvailable).IsRequired();
+        builder.Entity<Lockers>().Property(x => x.IsAvailable).IsRequired();
         builder.Entity<Lockers>().Property(x => x.StoreId).IsRequired();
     }
 }

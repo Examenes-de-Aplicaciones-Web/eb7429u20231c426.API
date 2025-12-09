@@ -15,7 +15,7 @@ public class LockerResourceFromEntityAssembler
         return new LockerResource(
             entity.Id,
             entity.LockerCode,
-            entity.isAvailable,
+            entity.IsAvailable,
             (int)entity.StoreId
         );
     }
