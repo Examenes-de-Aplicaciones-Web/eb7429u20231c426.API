@@ -1,4 +1,5 @@
 using eb7429u20231c426.API.Assets.Infrastructure.ASP.Configuration.Extensions;
+using eb7429u20231c426.API.Operations.Infrastructure.ASP.Configuration.Extentions;
 using eb7429u20231c426.API.Shared.Infrastructure.Documentation.OpenApi.Configuration.Extensions;
 using eb7429u20231c426.API.Shared.Infrastructure.Interfaces.ASP;
 using eb7429u20231c426.API.Shared.Infrastructure.Interfaces.ASP.Extensions;
@@ -34,6 +35,7 @@ builder.AddOpenApiDocumentation();
 // Add context-specific services
 builder.AddSharedContextServices();
 builder.AddLockerContextService();
+builder.AddOperationsContextService();
 
 // Mediator Configuration
 builder.AddCortexConfigurationServices();
