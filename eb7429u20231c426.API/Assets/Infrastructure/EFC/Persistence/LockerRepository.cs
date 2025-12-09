@@ -16,9 +16,6 @@ public class LockerRepository (AppDbContext context) : BaseRepository<Lockers>(c
     public new async Task<Lockers?> FindByIdAsync(int id)
     {
         return await Context.Set<Lockers>()
-            .Include(lockers => lockers.LockerCode )
-            .Include(lockers => lockers.StoreId )
-            .Include(lockers => lockers.isAvailable)
             .FirstOrDefaultAsync(lockers => lockers.Id == id);
     }
 }
