@@ -3,24 +3,50 @@ using eb7429u20231c426.API.Operations.Domain.Model.Commands;
 using eb7429u20231c426.API.Operations.Domain.Repositories;
 using eb7429u20231c426.API.Operations.Domain.Services;
 using eb7429u20231c426.API.Shared.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace eb7429u20231c426.API.Operations.Application.CommandService;
 
 public class OrdersCommandService 
 (
     IOrdersRepository ordersRepository,
+    IUserRepository userRepository, 
     IUnitOfWork unitOfWork
-    ) : IOrdersCommandService
+) : IOrdersCommandService
 {
     public async Task<Orders?> Handle(CreateOrdersCommand command)
     {
-        var existId = ordersRepository.ExistsByLockerIdAsync(command.LockerId);
-        var existUser = ordersRepository.FindByUserIdAsync(command.UserId);
-        if (existId || existUser != null)
+        // Check if this specific locker is already occupied by an order
+        var lockerOccupied = ordersRepository.ExistsByLockerIdAsync(command.LockerId);
+        
+        // Check if user exists
+        var user = await userRepository.FindByIdAsync(command.UserId);
+        if (user == null)
         {
-            throw new Exception("LockerId already exists or UserId already has an order.");
+            throw new Exception($"User with ID {command.UserId} does not exist.");
         }
+
+        // Check if user has existing orders (await the async method)
+        var userOrders = await ordersRepository.FindByUserIdAsync(command.UserId);
+        
+        // If locker is already occupied, throw error
+        if (lockerOccupied)
+        {
+            throw new Exception($"Locker with ID {command.LockerId} is already occupied by another order.");
+        }
+        
+        // Check if user has any orders that haven't been picked up yet
+        var activeUserOrders = userOrders.Any(o => o.PickedUpAt == null);
+        if (activeUserOrders)
+        {
+            throw new Exception($"User with ID {command.UserId} already has an active order that hasn't been picked up.");
+        }
+        
         var orders = new Orders(command);
+        
+        // Set the User navigation property
+        orders.User = user;
+
         try
         {
             await ordersRepository.AddAsync(orders);
@@ -29,6 +55,7 @@ public class OrdersCommandService
         }
         catch (Exception e)
         {
+            // Consider logging the exception here
             return null;
         }
     }
