@@ -5,10 +5,11 @@ using eb7429u20231c426.API.Operations.Domain.Services;
 
 namespace eb7429u20231c426.API.Operations.Application.QueryService;
 
-public class OrdersQueryService (IOrdersRepository ordersRepository) : IOrdersQueryService
+public class OrdersQueryService(IOrdersRepository ordersRepository) : IOrdersQueryService
 {
-    public async Task<Orders?> Handle(GetOrdersByIdQuery query)
+    public async Task<Orders?> Handle(GetOrdersByLockerIdAndOrderIdQuery query)
     {
-        return await ordersRepository.FindByIdAsync(query.Id);
+        var orders = await ordersRepository.FindByLockerIdAndOrderIdAsync(query.LockerId, query.OrderId);
+        return orders;
     }
 }
