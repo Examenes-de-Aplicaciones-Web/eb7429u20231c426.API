@@ -30,11 +30,11 @@ public class UserController (IUserCommandService userCommandService, IUserQueryS
     [SwaggerOperation(Summary = "Create User", Description = "Creates a new User")]
     [SwaggerResponse(201, "User created", typeof(UserResource))]
     [SwaggerResponse(400, "Invalid input")]
-    public async Task<IActionResult> CreateLocker([FromBody] CreateUserResource createuserResource)
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserResource createuserResource)
     {
         var createUserCommand = CreateUserCommandFromResourceAssembler.ToCommandFromResource(createuserResource);
         var user = await userCommandService.Handle(createUserCommand);
-        if (user is null) return BadRequest("Could not create locker.");
+        if (user is null) return BadRequest("Could not create user.");
         var userResource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
         return CreatedAtAction(nameof(GetUserById), new { userId = userResource.Id }, userResource);
     }
