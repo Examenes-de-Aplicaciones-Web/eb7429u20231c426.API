@@ -2,6 +2,7 @@
 using eb7429u20231c426.API.Operations.Domain.Repositories;
 using eb7429u20231c426.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using eb7429u20231c426.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace eb7429u20231c426.API.Operations.Infrastructure.EFC.Persistence;
 
@@ -16,5 +17,11 @@ public class OrdersRepository (AppDbContext context) :  BaseRepository<Orders>(c
     {
         var orders = Context.Set<Orders>().Where(orders => orders.UserId == userId);
         return Task.FromResult(orders.AsEnumerable());
+    }
+    public new async Task<Orders?> FindByIdAsync(int id)
+    {
+        return await Context.Set<Orders>()
+            .Include(o => o.User) // Incluir User
+            .FirstOrDefaultAsync(o => o.Id == id);
     }
 }
