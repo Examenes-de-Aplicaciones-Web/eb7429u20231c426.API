@@ -10,7 +10,7 @@ public partial class Orders
     public int LockerId { get; private set; }
     public int UserId { get; private set; }
     public DateTimeOffset? PlacedAt { get; private set; }
-    public DateTimeOffset? PickedUpAt { get; private set; }
+    public DateTimeOffset? PickedUpAt { get; set; }
 
     public User User { get; internal set; }
     
