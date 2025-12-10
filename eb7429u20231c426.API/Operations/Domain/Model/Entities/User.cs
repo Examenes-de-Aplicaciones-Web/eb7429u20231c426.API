@@ -3,7 +3,7 @@ using eb7429u20231c426.API.Operations.Domain.Model.Commands;
 
 namespace eb7429u20231c426.API.Operations.Domain.Model.Entities;
 
-public partial class User
+public class User
 {
    public int Id { get; set; }
    public string FirstName { get; set; }
@@ -11,7 +11,7 @@ public partial class User
    public string Email { get; set; }
    public EStore StoreId { get; set; }
 
-   protected User()
+   public User()
    {
       FirstName = string.Empty;
       LastName = string.Empty;
@@ -27,8 +27,12 @@ public partial class User
       StoreId = storeId;
    }
    
+   
    public User(CreateUserCommand command)
-       : this(command.FirstName, command.LastName, command.Email, command.StoreId)
    {
+      FirstName = command.FirstName;
+      LastName = command.LastName;
+      Email = command.Email;
+      StoreId = command.StoreId;
    }
 }
