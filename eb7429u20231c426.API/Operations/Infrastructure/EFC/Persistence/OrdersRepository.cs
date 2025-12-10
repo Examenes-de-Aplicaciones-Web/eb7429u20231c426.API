@@ -18,6 +18,15 @@ public class OrdersRepository (AppDbContext context) :  BaseRepository<Orders>(c
         var orders = Context.Set<Orders>().Where(orders => orders.UserId == userId);
         return Task.FromResult(orders.AsEnumerable());
     }
+
+    public Task<Orders?> FindByLockerIdAndOrderIdAsync(int lockerId, int orderId)
+    {
+        var order = Context.Set<Orders>()
+            .Include(o => o.User) // Incluir User si es necesario
+            .FirstOrDefaultAsync(orders => orders.LockerId == lockerId && orders.Id == orderId);
+        return order;
+    }
+
     public new async Task<Orders?> FindByIdAsync(int id)
     {
         return await Context.Set<Orders>()
