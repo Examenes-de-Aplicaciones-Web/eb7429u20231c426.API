@@ -7,4 +7,6 @@ public interface IOrdersRepository : IBaseRepository<Orders>
 {
     bool ExistsByLockerIdAsync(int lockerId);
     Task<IEnumerable<Orders>> FindByUserIdAsync(int userId);
+    
+    Task<Orders?> FindByLockerIdAndOrderIdAsync(int lockerId, int orderId);
 }
