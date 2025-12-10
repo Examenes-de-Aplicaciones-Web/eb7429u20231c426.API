@@ -5,5 +5,5 @@ namespace eb7429u20231c426.API.Operations.Domain.Services;
 
 public interface IOrdersQueryService
 {
-    Task<Orders?> Handle(GetOrdersByIdQuery query);
+    Task<Orders?> Handle(GetOrdersByLockerIdAndOrderIdQuery query);
 }
