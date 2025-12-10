@@ -32,4 +32,17 @@ public partial class Lockers
         : this(command.LockerCode, command.StoreId )
     {
     }
+
+    
+    // Method to update availability when a locker is occupied
+    public void UpdateOccupied()
+    {
+        IsAvailable = false;
+    }
+    
+    // Method to update availability when a locker is released
+    public void UpdateReleased()
+    {
+        IsAvailable = true;
+    }
 }
