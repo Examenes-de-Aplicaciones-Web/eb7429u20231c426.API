@@ -3,5 +3,9 @@
 public record OrdersResource(
     int Id,
     int LockerId,
+    DateTimeOffset? PlacedAt,
+    DateTimeOffset? PickedUpAt,
+    DateTimeOffset? CreatedAt,
+    DateTimeOffset? UpdatedAt,
     UserResource User
     );
