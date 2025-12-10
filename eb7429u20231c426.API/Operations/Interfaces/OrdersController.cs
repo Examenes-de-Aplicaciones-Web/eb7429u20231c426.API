@@ -13,7 +13,7 @@ namespace eb7429u20231c426.API.Operations.Interfaces;
 [SwaggerTag("Operations Management API")]
 public class OrdersController (IOrdersCommandService ordersCommandService, IOrdersQueryService ordersQueryService) :  ControllerBase
 {
-    // Endpoint to get a user by its ID
+    // Endpoint to get a order by its ID
     [HttpGet("{orderId:int}")]
     [SwaggerOperation(Summary = "Get Order by ID", Description = "Retrieves a Order by its unique identifier.")]
     [SwaggerResponse(200, "order by ID", typeof(OrdersResource))]
@@ -25,7 +25,7 @@ public class OrdersController (IOrdersCommandService ordersCommandService, IOrde
         var userResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(user);
         return Ok(userResource);
     }
-    // Endpoint to create a new user
+    // Endpoint to create a new order
     [HttpPost]
     [SwaggerOperation(Summary = "Create Orders", Description = "Creates a new Orders")]
     [SwaggerResponse(201, "Orders created", typeof(OrdersResource))]
