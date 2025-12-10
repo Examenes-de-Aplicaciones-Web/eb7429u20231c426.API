@@ -20,10 +20,11 @@ public class OrdersController (IOrdersCommandService ordersCommandService, IOrde
     [SwaggerResponse(404, "order not found")]
     public async Task<IActionResult> GetOrderById([FromRoute] int orderId)
     {
-        var user = await ordersQueryService.Handle(new GetOrdersByIdQuery(orderId));
-        if (user is null) return NotFound();
-        var userResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(user);
-        return Ok(userResource);
+        var getOrderByIdQuery = new GetOrdersByIdQuery(orderId);
+        var orders = await ordersQueryService.Handle(getOrderByIdQuery);
+        if (orders is null) return NotFound();
+        var ordersResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(orders);
+        return Ok(ordersResource);
     }
     // Endpoint to create a new order
     [HttpPost]
