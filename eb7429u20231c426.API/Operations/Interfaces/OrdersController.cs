@@ -8,19 +8,19 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace eb7429u20231c426.API.Operations.Interfaces;
 
 [ApiController]
-[Route("api/v1/orders")]
+[Route("api/v1/")]
 [Produces("application/json")]
 [SwaggerTag("Operations Management API")]
 public class OrdersController (IOrdersCommandService ordersCommandService, IOrdersQueryService ordersQueryService) :  ControllerBase
 {
     // Endpoint to get a order by its ID
-    [HttpGet("{orderId:int}")]
+    [HttpGet("lockers/{lockerId:int}/orders/{orderId:int}")]
     [SwaggerOperation(Summary = "Get Order by ID", Description = "Retrieves a Order by its unique identifier.")]
     [SwaggerResponse(200, "order by ID", typeof(OrdersResource))]
     [SwaggerResponse(404, "order not found")]
-    public async Task<IActionResult> GetOrderById([FromRoute] int orderId)
+    public async Task<IActionResult> GetOrderById([FromRoute] int orderId, [FromRoute] int lockerId)
     {
-        var getOrderByIdQuery = new GetOrdersByIdQuery(orderId);
+        var getOrderByIdQuery = new GetOrdersByLockerIdAndOrderIdQuery(lockerId, orderId);
         var orders = await ordersQueryService.Handle(getOrderByIdQuery);
         if (orders is null) return NotFound();
         var ordersResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(orders);
@@ -28,6 +28,7 @@ public class OrdersController (IOrdersCommandService ordersCommandService, IOrde
     }
     // Endpoint to create a new order
     [HttpPost]
+    [Route("orders")]
     [SwaggerOperation(Summary = "Create Orders", Description = "Creates a new Orders")]
     [SwaggerResponse(201, "Orders created", typeof(OrdersResource))]
     [SwaggerResponse(400, "Invalid input")]
@@ -37,6 +38,6 @@ public class OrdersController (IOrdersCommandService ordersCommandService, IOrde
         var orders = await ordersCommandService.Handle(createOrdersCommand);
         if (orders is null) return BadRequest("Could not create locker.");
         var ordersResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(orders);
-        return CreatedAtAction(nameof(GetOrderById), new { orderId = ordersResource.Id }, ordersResource);
+        return CreatedAtAction(nameof(GetOrderById), new { lockerId  = ordersResource.LockerId, orderId = ordersResource.Id}, ordersResource);
     }
 }
