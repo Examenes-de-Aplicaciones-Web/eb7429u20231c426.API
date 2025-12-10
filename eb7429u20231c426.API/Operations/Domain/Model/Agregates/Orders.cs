@@ -7,12 +7,12 @@ namespace eb7429u20231c426.API.Operations.Domain.Model.Agregates;
 public partial class Orders
 {
     public int Id { get; set; }
-    public int LockerId { get; set; }
-    public int UserId { get; set; }
-    public DateTimeOffset? PlacedAt { get; set; }
-    public DateTimeOffset? PickedUpAt { get; set; }
+    public int LockerId { get; private set; }
+    public int UserId { get; private set; }
+    public DateTimeOffset? PlacedAt { get; private set; }
+    public DateTimeOffset? PickedUpAt { get; private set; }
 
-    public User User { get; set; }
+    public User User { get; internal set; }
     
     public Lockers Locker { get; set; }
     public Orders(int lockerId, int userId) {
