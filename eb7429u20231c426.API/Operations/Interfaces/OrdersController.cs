@@ -1,4 +1,5 @@
-﻿using eb7429u20231c426.API.Operations.Domain.Model.Queries;
+﻿using eb7429u20231c426.API.Operations.Domain.Model.Commands;
+using eb7429u20231c426.API.Operations.Domain.Model.Queries;
 using eb7429u20231c426.API.Operations.Domain.Services;
 using eb7429u20231c426.API.Operations.Interfaces.REST.Resources;
 using eb7429u20231c426.API.Operations.Interfaces.REST.Transform;
@@ -39,5 +40,20 @@ public class OrdersController (IOrdersCommandService ordersCommandService, IOrde
         if (orders is null) return BadRequest("Could not create locker.");
         var ordersResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(orders);
         return CreatedAtAction(nameof(GetOrderById), new { lockerId  = ordersResource.LockerId, orderId = ordersResource.Id}, ordersResource);
+    }
+    // Endpoint to pick up an order
+    [HttpPost]
+    [Route("lockers/{userId:int}/orders/{orderId:int}/pickup")]
+    [SwaggerOperation(Summary = "Pick Up Order", Description = "Marks an order as picked up.")]
+    [SwaggerResponse(200, "Order picked up", typeof(OrdersResource))]
+    [SwaggerResponse(404, "Order not found")]
+    
+    public async Task<IActionResult> PickUpOrder([FromRoute] int orderId, [FromRoute] int userId)
+    {
+        var pickUpOrdersCommand = new PickUpOrdersCommand(orderId, userId);
+        var orders = await ordersCommandService.Handle(pickUpOrdersCommand);
+        if (orders is null) return NotFound();
+        var ordersResource = OrdersResourceFromEntityAssembler.ToResourceFromEntity(orders);
+        return Ok(ordersResource);
     }
 }
