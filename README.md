@@ -48,4 +48,4 @@ En Operations' Context es el responsable del manejo de los pedidos (orders). Est
 	<img src="docs/diagrama de clases.svg" alt="Logo-UPC">
 </div>
 
-(arrastra la imagen en un ventana para mejor visualizacion)
+(abre la imagen en una nueva ventana para mejor visualizacion)
