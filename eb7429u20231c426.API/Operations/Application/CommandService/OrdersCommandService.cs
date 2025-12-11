@@ -16,11 +16,32 @@ public class OrdersCommandService
     IUnitOfWork unitOfWork
 ) : IOrdersCommandService
 {
-    public async Task<Orders?> Handle(CreateOrdersCommand command)
-    {
-        // Check if this specific locker is already occupied by an order
-        var lockerOccupied = ordersRepository.ExistsByLockerIdAsync(command.LockerId);
+    public async Task<Orders?> Handle(CreateOrdersCommand command) {
+        // Buscar pedido activo en el locker (incluyendo chequeo de expiración)
+        var activeOrder = await ordersRepository.FindActiveOrderByLockerIdAsync(command.LockerId);
         
+        if (activeOrder != null)
+        {
+            // Verificar si el pedido activo ha expirado (más de 48 horas)
+            if (activeOrder.PlacedAt.HasValue && 
+                activeOrder.PlacedAt.Value.AddHours(48) < DateTimeOffset.UtcNow)
+            {
+                // El pedido ha expirado, liberar el locker
+                var expiredLocker = await lockerRepository.FindByIdAsync(command.LockerId); // Cambiado a expiredLocker
+                if (expiredLocker != null)
+                {
+                    expiredLocker.UpdateReleased();
+                    lockerRepository.Update(expiredLocker); // Usar expiredLocker aquí
+                    await unitOfWork.CompleteAsync();
+                    // Continuar con la creación del nuevo pedido
+                }
+            }
+            else
+            {
+                throw new Exception($"Locker with ID {command.LockerId} is already occupied by another active order.");
+            }
+        }
+
         // Check if user exists
         var user = await userRepository.FindByIdAsync(command.UserId);
         if (user == null)
@@ -31,21 +52,17 @@ public class OrdersCommandService
         // Check if user has existing orders (await the async method)
         var userOrders = await ordersRepository.FindByUserIdAsync(command.UserId);
         
-        // If locker is already occupied, throw error
-        if (lockerOccupied)
-        {
-            throw new Exception($"Locker with ID {command.LockerId} is already occupied by another order.");
-        }
-        
-        // Check if user has any orders that haven't been picked up yet
-        var activeUserOrders = userOrders.Any(o => o.PickedUpAt == null);
+        // Check if user has any orders that haven't been picked up yet AND haven't expired
+        var activeUserOrders = userOrders.Any(o => o.PickedUpAt == null && 
+                                                  !(o.PlacedAt.HasValue && 
+                                                    o.PlacedAt.Value.AddHours(48) < DateTimeOffset.UtcNow));
         if (activeUserOrders)
         {
             throw new Exception($"User with ID {command.UserId} already has an active order that hasn't been picked up.");
         }
         
         // check if locker exists
-        var locker = await lockerRepository.FindByIdAsync(command.LockerId);
+        var locker = await lockerRepository.FindByIdAsync(command.LockerId); // Este es el segundo locker
         // if not, throw error
         if (locker == null)
             throw new Exception($"Locker with ID {command.LockerId} does not exist.");
@@ -71,9 +88,8 @@ public class OrdersCommandService
             // Consider logging the exception here
             return null;
         }
-    }
-
-    public async Task<Orders?> Handle(PickUpOrdersCommand command)
+    }    
+    public async Task<Orders?> Handle(PickUpOrdersCommand command) 
     {
         // check if order exists
         var orders = await ordersRepository.FindByIdAsync(command.OrderId);
@@ -88,6 +104,22 @@ public class OrdersCommandService
         {
             throw new Exception($"Order with ID {command.OrderId} has already been picked up.");
         }
+        
+        // check if order has expired (más de 48 horas)
+        if (orders.PlacedAt.HasValue && 
+            orders.PlacedAt.Value.AddHours(48) < DateTimeOffset.UtcNow)
+        {
+            // Orden expirada, liberar locker pero no permitir recogida
+            var expiredLocker = await lockerRepository.FindByIdAsync(orders.LockerId); // Cambiado a expiredLocker
+            if (expiredLocker != null)
+            {
+                expiredLocker.UpdateReleased();
+                lockerRepository.Update(expiredLocker); // Usar expiredLocker aquí
+                await unitOfWork.CompleteAsync();
+            }
+            throw new Exception($"Order with ID {command.OrderId} has expired (more than 48 hours) and cannot be picked up.");
+        }
+        
         // check if user exists
         var user = await userRepository.FindByIdAsync(command.UserId);
         // if not, throw error
@@ -97,7 +129,7 @@ public class OrdersCommandService
         }
         
         // check if locker exists
-        var locker = await lockerRepository.FindByIdAsync(orders.LockerId);
+        var locker = await lockerRepository.FindByIdAsync(orders.LockerId); // Este es el segundo locker
         
         // if not, throw error
         if (locker == null)
