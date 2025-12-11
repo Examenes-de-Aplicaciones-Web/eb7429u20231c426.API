@@ -1,4 +1,5 @@
-﻿using eb7429u20231c426.API.Operations.Application.CommandService;
+﻿using eb7429u20231c426.API.Operations.Application.BackgroundServices;
+using eb7429u20231c426.API.Operations.Application.CommandService;
 using eb7429u20231c426.API.Operations.Application.QueryService;
 using eb7429u20231c426.API.Operations.Domain.Repositories;
 using eb7429u20231c426.API.Operations.Domain.Services;
@@ -19,5 +20,8 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IUserCommandService, UsersCommandService>();
         builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+        // Expired Orders Cleanup Background Service
+        builder.Services.AddHostedService<ExpiredOrdersCleanupService>();
+        
     }
 }
