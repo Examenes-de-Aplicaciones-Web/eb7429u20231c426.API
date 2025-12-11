@@ -33,4 +33,22 @@ public class OrdersRepository (AppDbContext context) :  BaseRepository<Orders>(c
             .Include(o => o.User) // Incluir User
             .FirstOrDefaultAsync(o => o.Id == id);
     }
+    
+    public async Task<Orders?> FindActiveOrderByLockerIdAsync(int lockerId)
+    {
+        return await Context.Set<Orders>()
+            .FirstOrDefaultAsync(o => o.LockerId == lockerId && 
+                                      o.PickedUpAt == null && 
+                                      !(o.PlacedAt.HasValue && 
+                                        o.PlacedAt.Value.AddHours(48) < DateTimeOffset.UtcNow));
+    }
+    
+    public async Task<IEnumerable<Orders>> FindExpiredOrdersAsync()
+    {
+        return await Context.Set<Orders>()
+            .Where(o => o.PickedUpAt == null && 
+                        o.PlacedAt.HasValue && 
+                        o.PlacedAt.Value.AddHours(48) < DateTimeOffset.UtcNow)
+            .ToListAsync();
+    }
 }
