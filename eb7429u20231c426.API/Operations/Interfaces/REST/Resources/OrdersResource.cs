@@ -7,5 +7,8 @@ public record OrdersResource(
     DateTimeOffset? PickedUpAt,
     DateTimeOffset? CreatedAt,
     DateTimeOffset? UpdatedAt,
-    UserResource User
+    UserResource User,
+    bool HasExpired, 
+    bool IsActive,    
+    TimeSpan? TimeUntilExpiry = null
     );
